@@ -67,27 +67,6 @@ cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-### Ejecutables
-
-#### Base
-
-* `sem1_demo_sum`
-* `sem1_demo_power`
-* `sem1_demo_fibonacci`
-* `sem1_test_public`
-* `sem1_test_internal`
-* `sem1_edge_cases`
-* `sem1_demo_sum_explicado`
-* `sem1_demo_adt_secuencia`
-* `sem1_demo_bubblesort`
-* `sem1_demo_maximos`
-* `sem1_demo_countones`
-* `sem1_demo_reverse_shift`
-* `sem1_demo_gcd`
-* `sem1_demo_hanoi`
-* `sem1_test_public_extra`
-* `sem1_test_internal_extra`
-
 #### Ejecución manual en Windows (Debug)
 
 Si compilaste con:
