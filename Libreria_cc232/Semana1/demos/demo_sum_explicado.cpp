@@ -54,18 +54,18 @@ int main() {
 
     print_array(a, n);
 
-    std::cout << "\n=== Version iterativa de Deng ===\n";
+    std::cout << "\n= Version iterativa de Deng\n";
     std::cout << "sumI(a, n) = " << sumI(a, n) << "\n";
-    std::cout << "\n=== Trazado pedagogico de la version iterativa ===\n";
+    std::cout << "\n=Trazado pedagogico de la version iterativa\n";
     std::cout << "resultado = " << sumI_trace(a, n) << "\n";
 
-    std::cout << "\n=== Version recursiva lineal de Deng ===\n";
+    std::cout << "\n=Version recursiva lineal de Deng\n";
     std::cout << "sum(a, n) = " << sum(a, n) << "\n";
 
-    std::cout << "\n=== Version divide y venceras de Deng ===\n";
+    std::cout << "\n=Version divide y venceras de Deng\n";
     std::cout << "sum(a, 0, n) = " << sum(a, 0, n) << "\n";
 
-    std::cout << "\n=== Trazado pedagogico de divide y venceras ===\n";
+    std::cout << "\n=Trazado pedagogico de divide y venceras\n";
     std::cout << "resultado = " << sum_dc_trace(a, 0, n) << "\n";
 
     std::cout << "\nNota: el trazado pedagogico define sum([lo, hi)) = 0 si hi <= lo.\n";
