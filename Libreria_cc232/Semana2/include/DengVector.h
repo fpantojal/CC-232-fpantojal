@@ -1,4 +1,4 @@
-# Adaptado pedagogicamente para CC232 a partir del codigo de Deng.
+// Adaptado pedagogicamente para CC232 a partir del codigo de Deng.
 
 #pragma once
 
