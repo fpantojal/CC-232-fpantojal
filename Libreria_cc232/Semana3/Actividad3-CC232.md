@@ -59,8 +59,8 @@ Además, se busca conectar las implementaciones enlazadas de Morin con la interf
 
 #### Lecturas obligatorias
 
-- `Parte3-Deng.docx`
-- `Parte3-Morin.docx`
+- `Parte3-Deng.pdf`
+- `Parte3-Morin.pdf`
 
 #### Bloque 0 - Instalación y preparación
 
@@ -75,8 +75,8 @@ Además, se busca conectar las implementaciones enlazadas de Morin con la interf
 Revisen:
 
 - `Semana3/README.md`
-- `Parte3-Deng.docx`
-- `Parte3-Morin.docx`
+- `Parte3-Deng.pdf`
+- `Parte3-Morin.pdf`
 - `Semana3/include/SLList.h`
 - `Semana3/include/DLList.h`
 - `Semana3/include/SEList.h`
@@ -164,8 +164,8 @@ Revisen:
 - `Semana3/include/SLList.h`
 - `Semana3/include/DLList.h`
 - `Semana3/include/SEList.h`
-- `Parte3-Morin.docx`
-- `Parte3-Deng.docx`
+- `Parte3-Morin.pdf`
+- `Parte3-Deng.pdf`
 
 Respondan:
 
@@ -217,7 +217,7 @@ Revisen:
 - `Semana3/demos/demo_morin_deng_bridge.cpp`
 - `Semana3/pruebas_publicas/test_public_deng_bridge.cpp`
 - `Semana3/pruebas_internas/test_internal_deng_algorithms.cpp`
-- `Parte3-Deng.docx`
+- `Parte3-Deng.pdf`
 
 Respondan:
 
@@ -238,7 +238,7 @@ Revisen:
 - `Semana3/demos/demo_contiguous_vs_linked.cpp`
 - `Semana3/demos/demo_xor_list.cpp`
 - `Semana3/benchmarks/benchmark_semana3.cpp`
-- `Parte3-Morin.docx`
+- `Parte3-Morin.pdf`
 
 Respondan:
 
