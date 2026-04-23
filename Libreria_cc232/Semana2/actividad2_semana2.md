@@ -19,10 +19,10 @@
 #### Bloque 2
 | Archivo | Salida u observable importante | Idea estructural | Argumento de costo o espacio |
 | --- | --- | --- | --- |
-|`Semana2/demos/demo_array_basico.cpp`|Despues de `b=a`, el arreglo `b` pasa a tener los datos de `a` y su tamaño|Diseñada como un contenedor minimo con dos campos: puntero a memoria dinamica `a` y tamaño logico `length`.La decision estructural central es **ownership unico** del buffer interno: la asignacion mueve ese ownership al destino, en vez de clonar contenido.|Complejidad temporal $O(1)$|
-|`Semana2/demos/demo_arraystack.cpp`|Despues de `add(1,15)`, el elemento  seinserta en posicion1 y 20 se desplaza a la derecha. El `remove(1)` extrae ese 15 y los restantes se desplazan :`10 20`| Mantiene un array dinamico `a` con un contador logico `n` de elementos activos. Las inserciones/eliminaciones **desplazan elementos** en el array para mantener continuidad|Insercion/eliminacion en posicion `i`: $O(n)$. Acceso get(i) :$O(1)$. Redimension amortizada: $O(1)$. Espacio $O(n)$ con overhead pro capacidad de reserva|
-|`Semana2/demos/demo_arraystack_explicado.cpp`||||
-|`Semana2/demos/demo_fastarraystack.cpp`||||
+|`Semana2/demos/demo_array_basico.cpp`|Despues de `b=a`, el arreglo `b` pasa a tener los datos de `a` y su tamaño|<ul><li> Diseñada como un contenedor minimo con dos campos: puntero a memoria dinamica `a` y tamaño logico `length`. </li><li>La decision estructural central es `ownership unico` del buffer interno: la asignacion mueve ese ownership al destino, en vez de clonar contenido.|<ul><li> Complejidad temporal $O(1)$</li> |
+|`Semana2/demos/demo_arraystack.cpp`|Despues de `add(1,15)`, el elemento  se inserta en posicion 1 y 20 se desplaza a la derecha. El `remove(1)` extrae ese 15 y los restantes se desplazan :`10 20`|<ul><li> Mantiene un array dinamico `a` con un contador logico `n` de elementos activos.</li><li> Las inserciones/eliminaciones desplazan elementos en el array para mantener continuidad</li> |<ul><li> Insercion/eliminacion en posicion `i`: $O(n)$.</li><li> Acceso get(i) :$O(1)$.</li><li> Redimension amortizada: $O(1)$.</li><li> Espacio $O(n)$ con overhead por capacidad de reserva</li> |
+|`Semana2/demos/demo_arraystack_explicado.cpp`|Despues de `push_back(20)` hubo resize, luego inserta 20 <br> Despues de `add(1,15)` hubo resize, se desplaza 20 a la derecha.<br> Despues de `remove(0)` remueve 10, desplaza valores a la izquierda. |<ul><li>`add(i,x)` inserta en posicion i, desplazando a la derecha desde `i` hasta `n-1`.</li><li>`remove(i)` elimina en `i`, desplanzado a la izquierda desde `i+1` hasta `n-1`.</li><li> `resize` rehace el arreglo con tamaño `max(2n,1).</li><li>`push_back(x) es solo un `add(n,x)`</li> |<ul><li>`push_back(x)` es `$O(1)$`amortizado, porque normalmente inserta la final sin desplazar; ocacionalemnte hace resize `$O(n)$` </li><li>`add(i,x)` es `$O(n-i)$` por desplazamiento y en algunos casos `$O(n)$` adicional por resize.</li><li>`remove(i)` es `$O(n-i-1)$` por desplazamiento</li> |
+|`Semana2/demos/demo_fastarraystack.cpp`|<ul><li>Inserta `0,1,2,3,4,5`al final con `s.add(s.size(),i)`.</li><li>Luego inserta `99` en el indice `3` con `s.add(3,99)`, desplazando a la derecha los elementos desde esa posicion.</li></ul> |<ul><li> `add(i,x)` <ul><li>Si no alcanza capacidad redimensiona.</li><li>Usa `std::copy_backward(a+i,a+n,a+n++i)` para abrir espacio.</li><li>Escribe `x` en `a[i]` y aumenta `n`</li></li></ul><li>`remove(i)` <ul><li>Guarda el valor `a[i]`</li><li>Usa `std::copy(a+i+1,a+n,a+i)` para cerrar el hueco</li><li>Decrementa `n` y puede "achicar"</li><li>Finalmente devuelve `a[i]`</li> </li> |<ul><li>`add(i,x)` <ul><li>Desplazamiento de (n-i) elementos `$O(n-i)$`</li><li>Si hay `resize`, copia n elementos `$O(n)$` extra</li><li>Peor caso `O(n)`</li></ul><li>`remove(i)` <ul><li>Desplaza `(n-i-1)` elementos `$O(n-i)$`</li><li>Reduccion ocasional puede costar `$O(n)$`.</li><li>Peor caso: `$O(n)$`</li></ul> </li> </li> |
 |`Semana2/demos/demo_rootisharraystack.cpp`||||
 |`Semana2/demos/demo_rootisharraystack_explicado.cpp`||||
 |`Semana2/demos/demo_deng_vector.cpp`||||
@@ -61,3 +61,7 @@
 - Qué podemos defender con seguridad:
 - Qué todavía confundimos:
 - Qué evidencia usaríamos en una sustentación:
+
+
+
+
