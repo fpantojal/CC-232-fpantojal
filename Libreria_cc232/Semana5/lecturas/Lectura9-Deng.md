@@ -1,4 +1,4 @@
-### Árboles binarios 
+### Árboles binarios según Deng
 
 ###  Resumen
 
