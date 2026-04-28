@@ -28,3 +28,21 @@ target_link_libraries(demo_brackets_nonoptimized PRIVATE BracketSolver)
 add_executable(demo_brackets_comparison demos/demo_brackets_comparison.cpp)
 
 target_link_libraries(demo_brackets_comparison PRIVATE BracketSolver)
+
+# Tests
+add_executable(test_bracket_solver_basic tests/test_bracket_solver_basic.cpp)
+
+target_link_libraries(test_bracket_solver_basic PRIVATE BracketSolver)
+
+add_executable(test_bracket_solver_extended tests/test_bracket_solver_extended.cpp)
+
+target_link_libraries(test_bracket_solver_extended PRIVATE BracketSolver)
+
+add_executable(test_bracket_solver_stress tests/test_bracket_solver_stress.cpp)
+
+target_link_libraries(test_bracket_solver_stress PRIVATE BracketSolver)
+
+# Benchmarks
+add_executable(bench_bracket_solver benchmark/bench_bracket_solver.cpp)
+
+target_link_libraries(bench_bracket_solver PRIVATE BracketSolver)
