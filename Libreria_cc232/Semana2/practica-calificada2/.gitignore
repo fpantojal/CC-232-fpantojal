@@ -1,0 +1,26 @@
+# CMake / build artifacts
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+Makefile
+build.ninja
+rules.ninja
+
+# CTest / temporary test output
+Testing/
+
+# Common IDE files
+.vscode/
+.idea/
+*.user
+*.suo
+*.userossc
+*.sln.docstates
+
+# OS files
+Thumbs.db
+.DS_Store
