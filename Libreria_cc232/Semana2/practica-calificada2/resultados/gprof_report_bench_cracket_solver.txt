@@ -1,0 +1,64 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 99.73      7.32     7.32        9   813.33   813.33  PC2::solveBracketsNonOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.27      7.34     0.02                             _init
+  0.00      7.34     0.00       85     0.00     0.00  void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&)
+  0.00      7.34     0.00        9     0.00     0.00  PC2::solveBracketsOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.00      7.34     0.00        9     0.00     0.00  std::_Deque_base<int, std::allocator<int> >::~_Deque_base()
+  0.00      7.34     0.00        9     0.00     0.00  std::deque<int, std::allocator<int> >::_M_reallocate_map(unsigned long, bool)
+  0.00      7.34     0.00        9     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<std::allocator<char> >(char const*, std::allocator<char> const&)
+  0.00      7.34     0.00        6     0.00     0.00  PC2::bench::print_result(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double)
+
+			Call graph
+
+
+granularity: each sample hit covers 4 byte(s) for 0.14% of 7.34 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     99.7    0.00    7.32                 main [1]
+                7.32    0.00       9/9           PC2::solveBracketsNonOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [2]
+                0.00    0.00       9/9           PC2::solveBracketsOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [11]
+                0.00    0.00       9/9           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<std::allocator<char> >(char const*, std::allocator<char> const&) [14]
+                0.00    0.00       7/85          void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&) [10]
+                0.00    0.00       6/6           PC2::bench::print_result(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double) [15]
+-----------------------------------------------
+                7.32    0.00       9/9           main [1]
+[2]     99.7    7.32    0.00       9         PC2::solveBracketsNonOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [2]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]      0.3    0.02    0.00                 _init [3]
+-----------------------------------------------
+                                   6             void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&) [10]
+                0.00    0.00       7/85          main [1]
+                0.00    0.00      78/85          PC2::solveBracketsOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [11]
+[10]     0.0    0.00    0.00      85+6       void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&) [10]
+                0.00    0.00       9/9           std::deque<int, std::allocator<int> >::_M_reallocate_map(unsigned long, bool) [13]
+                                   6             void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&) [10]
+-----------------------------------------------
+                0.00    0.00       9/9           main [1]
+[11]     0.0    0.00    0.00       9         PC2::solveBracketsOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [11]
+                0.00    0.00      78/85          void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&) [10]
+                0.00    0.00       9/9           std::_Deque_base<int, std::allocator<int> >::~_Deque_base() [12]
+-----------------------------------------------
+                0.00    0.00       9/9           PC2::solveBracketsOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [11]
+[12]     0.0    0.00    0.00       9         std::_Deque_base<int, std::allocator<int> >::~_Deque_base() [12]
+-----------------------------------------------
+                0.00    0.00       9/9           void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&) [10]
+[13]     0.0    0.00    0.00       9         std::deque<int, std::allocator<int> >::_M_reallocate_map(unsigned long, bool) [13]
+-----------------------------------------------
+                0.00    0.00       9/9           main [1]
+[14]     0.0    0.00    0.00       9         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<std::allocator<char> >(char const*, std::allocator<char> const&) [14]
+-----------------------------------------------
+                0.00    0.00       6/6           main [1]
+[15]     0.0    0.00    0.00       6         PC2::bench::print_result(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double) [15]
+-----------------------------------------------
+
+Index by function name
+
+  [11] PC2::solveBracketsOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [12] std::_Deque_base<int, std::allocator<int> >::~_Deque_base() [14] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string<std::allocator<char> >(char const*, std::allocator<char> const&)
+   [2] PC2::solveBracketsNonOptimized(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [10] void std::deque<int, std::allocator<int> >::_M_push_back_aux<int const&>(int const&) [3] _init
+  [15] PC2::bench::print_result(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double) [13] std::deque<int, std::allocator<int> >::_M_reallocate_map(unsigned long, bool)

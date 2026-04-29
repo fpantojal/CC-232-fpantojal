@@ -13,6 +13,25 @@ rules.ninja
 # CTest / temporary test output
 Testing/
 
+# Compiled binaries and object files
+*.o
+*.obj
+*.out
+*.exe
+*.app
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+
+# Profiling and debugging
+gmon.out
+*.prof
+*.gprof
+*.callgrind*
+*.perf
+
 # Common IDE files
 .vscode/
 .idea/
