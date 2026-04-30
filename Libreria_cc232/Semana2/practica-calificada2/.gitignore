@@ -9,7 +9,7 @@ compile_commands.json
 Makefile
 build.ninja
 rules.ninja
-
+benchmark/bench_bracket_solver
 # CTest / temporary test output
 Testing/
 
