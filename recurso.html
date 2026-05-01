@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Paréntesis 5C - Modo PIP</title>
+    <!-- Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React y Babel para ejecutar el componente en el navegador -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .vertical-rl { writing-mode: vertical-rl; }
+        
+        /* Estilos para asegurar que el PIP se vea bien */
+        #pip-root:empty { display: none; }
+
+        /* Estilo para el mensaje de advertencia */
+        .alert-box {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        .pulse-floor {
+            animation: pulse-amber 2s infinite;
+        }
+        @keyframes pulse-amber {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // Iconos SVG
+        const Play = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>;
+        const SkipForward = () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>;
+        const SkipBack = () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>;
+        const RotateCcw = () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>;
+        const Info = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>;
+        const PipIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 12v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v2" /><rect width="7" height="5" x="15" y="7" rx="1" /><path d="m19 12-2 2-2-2" /></svg>;
+        const XCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>;
+        const ArrowRight = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
+        const AlertTriangle = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>;
+
+        const calculateSteps = (str) => {
+            let stack = [-1];
+            let currentMax = 0;
+            let currentCount = 1;
+            let history = [{
+                index: -1, char: 'Inicio', stackBefore: [-1], stackAfter: [-1], currentLen: 0, maxLen: 0, count: 1,
+                action: "Estado inicial: el 'suelo' es -1.", isFloorUpdate: false
+            }];
+
+            if (!str) return history;
+
+            for (let i = 0; i < str.length; i++) {
+                let char = str[i];
+                let action = "";
+                let len = 0;
+                let stackBefore = [...stack];
+                let isFloorUpdate = false;
+
+                if (char === '(') {
+                    stack.push(i);
+                    action = `Apertura: el índice ${i} entra en la pila.`;
+                } else if (char === ')') {
+                    stack.pop();
+                    if (stack.length === 0) {
+                        stack.push(i);
+                        isFloorUpdate = true;
+                        action = `CIERRE HUÉRFANO: No hay '(' previo. El índice ${i} se convierte en el NUEVO SUELO para las futuras mediciones.`;
+                    } else {
+                        len = i - stack[stack.length - 1];
+                        action = `¡Pareja encontrada! Restamos índice actual (${i}) menos el índice que quedó en el tope (${stack[stack.length - 1]}). Longitud = ${len}`;
+                        if (len > currentMax) { currentMax = len; currentCount = 1; }
+                        else if (len === currentMax && len !== 0) { currentCount++; }
+                    }
+                }
+                
+                history.push({ 
+                    index: i, char, stackBefore, stackAfter: [...stack], 
+                    currentLen: len, maxLen: currentMax, count: currentCount, 
+                    action, isFloorUpdate
+                });
+            }
+            return history;
+        };
+
+        const App = () => {
+            const [inputString, setInputString] = useState("())(())");
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+            const [pipWindow, setPipWindow] = useState(null);
+            const [errorMessage, setErrorMessage] = useState("");
+            const visualizerRef = useRef(null);
+
+            const steps = useMemo(() => calculateSteps(inputString), [inputString]);
+
+            useEffect(() => {
+                setCurrentIndex(0);
+                setIsAutoPlaying(false);
+            }, [inputString]);
+
+            useEffect(() => {
+                let timer;
+                if (isAutoPlaying && currentIndex < steps.length - 1) {
+                    timer = setTimeout(() => setCurrentIndex(prev => prev + 1), 1200);
+                } else if (currentIndex >= steps.length - 1) {
+                    setIsAutoPlaying(false);
+                }
+                return () => clearTimeout(timer);
+            }, [isAutoPlaying, currentIndex, steps.length]);
+
+            const togglePip = async () => {
+                setErrorMessage("");
+                if (pipWindow) { pipWindow.close(); return; }
+                if (!window.documentPictureInPicture) { setErrorMessage("PiP no soportado."); return; }
+                if (window.self !== window.top) { setErrorMessage("Ábrelo directamente."); return; }
+
+                try {
+                    const pipW = await window.documentPictureInPicture.requestWindow({ width: 500, height: 750 });
+                    [...document.styleSheets].forEach((ss) => {
+                        try {
+                            if (ss.cssRules) {
+                                const style = document.createElement('style');
+                                style.textContent = [...ss.cssRules].map((r) => r.cssText).join('');
+                                pipW.document.head.appendChild(style);
+                            }
+                        } catch (e) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet'; link.href = ss.href;
+                            pipW.document.head.appendChild(link);
+                        }
+                    });
+                    pipW.document.body.append(visualizerRef.current);
+                    pipW.addEventListener("pagehide", () => {
+                        const container = document.getElementById('visualizer-container');
+                        if (container) container.append(visualizerRef.current);
+                        setPipWindow(null);
+                    });
+                    setPipWindow(pipW);
+                } catch (err) { setErrorMessage("Error PiP."); }
+            };
+
+            const currentStep = steps[currentIndex] || steps[0];
+
+            return (
+                <div className="min-h-screen p-4 md:p-8 text-slate-900 bg-slate-50">
+                    <div className="max-w-5xl mx-auto space-y-6">
+                        
+                        {errorMessage && (
+                            <div className="alert-box bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl flex items-center justify-between shadow-sm">
+                                <div className="flex items-center gap-3">
+                                    <div className="text-red-500"><XCircle /></div>
+                                    <p className="text-red-700 text-sm font-medium">{errorMessage}</p>
+                                </div>
+                                <button onClick={() => setErrorMessage("")} className="text-red-400 hover:text-red-600">×</button>
+                            </div>
+                        )}
+
+                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div className="flex justify-between items-start mb-6">
+                                <div>
+                                    <h1 className="text-2xl font-bold text-indigo-600 mb-1">Simulador 5C Interactiva</h1>
+                                    <p className="text-slate-500 text-sm font-medium tracking-tight">Análisis de Pila Paso a Paso</p>
+                                </div>
+                                <button 
+                                    onClick={togglePip}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${pipWindow ? 'bg-red-50 text-red-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                >
+                                    <PipIcon /> {pipWindow ? 'Cerrar PIP' : 'Modo PIP'}
+                                </button>
+                            </div>
+                            
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <div className="flex-1">
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Cadena a Procesar</label>
+                                    <input 
+                                        type="text" 
+                                        value={inputString}
+                                        onChange={(e) => setInputString(e.target.value.replace(/[^()]/g, ''))}
+                                        className="w-full p-4 rounded-xl border-2 border-slate-100 focus:border-indigo-500 outline-none font-mono text-2xl tracking-[0.2em]"
+                                    />
+                                </div>
+                                <div className="flex items-end gap-2">
+                                    <button onClick={() => setCurrentIndex(0)} className="p-4 rounded-xl bg-slate-100 hover:bg-slate-200"><RotateCcw /></button>
+                                    <button 
+                                        onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                                        className={`px-6 py-4 rounded-xl font-bold flex items-center gap-2 transition-all ${isAutoPlaying ? 'bg-amber-100 text-amber-700' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                                    >
+                                        {isAutoPlaying ? "Pausa" : <><Play /> Play</>}
+                                    </button>
+                                    <button onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))} className="p-4 rounded-xl bg-slate-100 hover:bg-slate-200"><SkipBack /></button>
+                                    <button onClick={() => setCurrentIndex(prev => Math.min(steps.length - 1, prev + 1))} className="p-4 rounded-xl bg-slate-100 hover:bg-slate-200"><SkipForward /></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="visualizer-container">
+                            <div ref={visualizerRef} className={`grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 ${pipWindow ? 'bg-white h-screen overflow-auto' : ''}`}>
+                                
+                                <div className="lg:col-span-2 space-y-6">
+                                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-8">
+                                        <div className="flex flex-wrap justify-center gap-2">
+                                            {inputString.split('').map((char, i) => (
+                                                <div key={i} className="flex flex-col items-center">
+                                                    <span className={`text-sm font-bold font-mono mb-1 transition-colors ${currentStep.index === i ? 'text-indigo-600' : 'text-slate-400'}`}>{i}</span>
+                                                    <div className={`w-10 h-14 flex items-center justify-center text-2xl font-bold rounded-lg border-2 transition-all ${currentStep.index === i ? 'border-indigo-500 bg-indigo-50 text-indigo-700 scale-110 shadow-sm' : 'border-slate-50 text-slate-200'}`}>{char}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className={`rounded-xl p-4 flex gap-3 items-start border transition-colors ${currentStep.isFloorUpdate ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'}`}>
+                                            <div className={`${currentStep.isFloorUpdate ? 'text-amber-600' : 'text-indigo-600'} p-1 rounded-md shrink-0`}>
+                                                {currentStep.isFloorUpdate ? <AlertTriangle /> : <Info />}
+                                            </div>
+                                            <p className={`text-xs font-semibold leading-relaxed ${currentStep.isFloorUpdate ? 'text-amber-800' : 'text-slate-700'}`}>{currentStep.action}</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                                                <span className="text-[9px] font-bold text-emerald-600 uppercase">Longitud Max</span>
+                                                <p className="text-3xl font-black text-emerald-700">{currentStep.maxLen}</p>
+                                            </div>
+                                            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                                <span className="text-[9px] font-bold text-blue-600 uppercase">Frecuencia</span>
+                                                <p className="text-3xl font-black text-blue-700">{currentStep.count}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="lg:col-span-2 grid grid-cols-2 gap-4 h-[450px]">
+                                    <div className="bg-slate-100 rounded-2xl p-4 shadow-inner flex flex-col border border-slate-200">
+                                        <h3 className="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest text-center">Pila ANTES</h3>
+                                        <div className="flex-1 flex flex-col-reverse gap-2 overflow-y-auto pr-1">
+                                            {currentStep.stackBefore.map((val, idx) => (
+                                                <div key={idx} className="p-2 rounded-lg font-mono text-center text-sm transition-all bg-white border border-slate-200 text-slate-500">
+                                                    <div className="text-[8px] opacity-40 uppercase">{idx === currentStep.stackBefore.length - 1 ? 'TOP' : 'Base'}</div>
+                                                    <div className="font-bold">{val}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-slate-900 rounded-2xl p-4 shadow-xl flex flex-col relative overflow-hidden">
+                                        <div className={`absolute top-1/2 -left-2 -translate-y-1/2 p-1 rounded-full text-white z-10 shadow-lg transition-colors ${currentStep.isFloorUpdate ? 'bg-amber-500' : 'bg-indigo-500'}`}>
+                                            <ArrowRight />
+                                        </div>
+                                        <h3 className="text-[10px] font-black text-slate-500 uppercase mb-4 tracking-widest text-center">Pila ACTUAL</h3>
+                                        <div className="flex-1 flex flex-col-reverse gap-2 overflow-y-auto pr-1">
+                                            {currentStep.stackAfter.map((val, idx) => {
+                                                const isTop = idx === currentStep.stackAfter.length - 1;
+                                                const isNewFloor = currentStep.isFloorUpdate && isTop;
+                                                return (
+                                                    <div key={idx} className={`p-2 rounded-lg font-mono text-center text-sm transition-all ${isNewFloor ? 'bg-amber-500 text-white pulse-floor' : isTop ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                                                        <div className="text-[8px] opacity-70 uppercase font-bold">{isNewFloor ? 'NUEVO PISO' : isTop ? 'TOP (Base Ref)' : 'Base'}</div>
+                                                        <div className="font-bold">{val}</div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

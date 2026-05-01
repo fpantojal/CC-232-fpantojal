@@ -33,7 +33,7 @@ namespace PC2
                     if (currentLen > stats.maxLen) {
                         stats.maxLen = currentLen;
                         stats.count = 1;
-                    } else if (currentLen == stats.maxLen && currentLen != 0) {
+                    } else if(currentLen == stats.maxLen && currentLen != 0){
                         stats.count++;
                     }
                 }
@@ -87,5 +87,4 @@ namespace PC2
         // Si maxLen sigue siendo 0, count debe ser 1 (ya inicializado en el struct)
         return stats;
     }
-
 } // namespace PC2
